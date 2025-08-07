@@ -19,24 +19,30 @@ import PurchaseCancelPage from "./pages/PurchaseCancelPage";
 function App() {
 	const { user, checkAuth, checkingAuth } = useUserStore();
 	const { getCartItems } = useCartStore();
+	
 	useEffect(() => {
 		checkAuth();
 	}, [checkAuth]);
 
 	useEffect(() => {
 		if (!user) return;
-
 		getCartItems();
 	}, [getCartItems, user]);
 
 	if (checkingAuth) return <LoadingSpinner />;
 
 	return (
-		<div className='min-h-screen bg-gray-900 text-white relative overflow-hidden'>
-			{/* Background gradient */}
+		<div className='min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 text-amber-900 relative overflow-hidden'>
+			{/* Background Pattern */}
 			<div className='absolute inset-0 overflow-hidden'>
 				<div className='absolute inset-0'>
-					<div className='absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.3)_0%,rgba(10,80,60,0.2)_45%,rgba(0,0,0,0.1)_100%)]' />
+					{/* Subtle Pattern Overlay */}
+					<div className='absolute top-0 left-0 w-full h-full opacity-5 bg-gradient-to-br from-amber-200 via-orange-100 to-yellow-100' />
+					
+					{/* Decorative Circles */}
+					<div className='absolute top-20 -right-20 w-96 h-96 bg-gradient-to-br from-amber-200/30 to-orange-200/20 rounded-full blur-3xl' />
+					<div className='absolute -bottom-32 -left-32 w-96 h-96 bg-gradient-to-br from-yellow-200/20 to-amber-200/30 rounded-full blur-3xl' />
+					<div className='absolute top-1/2 left-1/4 w-64 h-64 bg-gradient-to-br from-orange-200/20 to-yellow-200/20 rounded-full blur-2xl' />
 				</div>
 			</div>
 

@@ -4,93 +4,90 @@ import { Link } from "react-router-dom";
 import { MoveRight } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "../lib/axios";
-import { convertAndFormatIdr } from "../utils/currency";
+import { formatIdr } from "../utils/currency";
 
 const stripePromise = loadStripe(
-	"pk_test_51Rsor6FxFMaPTAlwZ2NgIi5ASRSmCwOW6pdcAXQSPTcAHXg5aXlqFCIdTloAGvnpx760EMp1rSW3XSFomcMZbKFC00ZbTSs4hb"
+  "pk_test_51Rsor6FxFMaPTAlwZ2NgIi5ASRSmCwOW6pdcAXQSPTcAHXg5aXlqFCIdTloAGvnpx760EMp1rSW3XSFomcMZbKFC00ZbTSs4hb"
 );
 
 const OrderSummary = () => {
-	const { total, subtotal, coupon, isCouponApplied, cart } = useCartStore();
+  const { total, subtotal, coupon, isCouponApplied, cart } = useCartStore();
 
-	const savings = subtotal - total;
-	const formattedSubtotal = convertAndFormatIdr(subtotal);
-	const formattedTotal = convertAndFormatIdr(total);
-	const formattedSavings = convertAndFormatIdr(savings);
+  const savings = subtotal - total;
+  const formattedSubtotal = formatIdr(subtotal);
+  const formattedTotal = formatIdr(total);
 
-	const handlePayment = async () => {
-		const stripe = await stripePromise;
-		const res = await axios.post("/payments/create-checkout-session", {
-			products: cart,
-			couponCode: coupon ? coupon.code : null,
-		});
+  const handlePayment = async () => {
+    const stripe = await stripePromise;
+    try {
+      const res = await axios.post("/payments/create-checkout-session", {
+        products: cart,
+        couponCode: coupon ? coupon.code : null,
+      });
 
-		const session = res.data;
-		const result = await stripe.redirectToCheckout({
-			sessionId: session.id,
-		});
+      const session = res.data;
+      const result = await stripe.redirectToCheckout({
+        sessionId: session.id,
+      });
 
-		if (result.error) {
-			console.error("Error:", result.error);
-		}
-	};
+      if (result.error) {
+        console.error("Stripe error:", result.error);
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+    }
+  };
 
-	return (
-		<motion.div
-			className='space-y-4 rounded-lg border border-gray-700 bg-gray-800 p-4 shadow-sm sm:p-6'
-			initial={{ opacity: 0, y: 20 }}
-			animate={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.5 }}
-		>
-			<p className='text-xl font-semibold text-emerald-400'>Ringkasan Pesanan</p>
+  return (
+    <motion.div
+      className="space-y-6 rounded-xl border border-brown-600 bg-white p-6 shadow-md"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h2 className="text-xl font-bold text-brown-700">Ringkasan Pesanan</h2>
 
-			<div className='space-y-4'>
-				<div className='space-y-2'>
-					<dl className='flex items-center justify-between gap-4'>
-						<dt className='text-base font-normal text-gray-300'>Harga Asli</dt>
-						<dd className='text-base font-medium text-white'>{formattedSubtotal}</dd>
-					</dl>
+      <div className="space-y-3 text-gray-800 text-sm">
+        <SummaryRow label="Harga Asli" value={formattedSubtotal} />
+        {savings > 0 && (
+          <SummaryRow label="Hemat" value={`- ${formattedSavings}`} valueClass="text-green-600" />
+        )}
+        {coupon && isCouponApplied && (
+          <SummaryRow label={`Kupon (${coupon.code})`} value={`- ${coupon.discountPercentage}%`} valueClass="text-green-600" />
+        )}
+        <div className="border-t border-gray-300 pt-2">
+          <SummaryRow label="Total" value={formattedTotal} valueClass="text-brown-700 font-bold" />
+        </div>
+      </div>
 
-					{savings > 0 && (
-						<dl className='flex items-center justify-between gap-4'>
-							<dt className='text-base font-normal text-gray-300'>Hemat</dt>
-							<dd className='text-base font-medium text-emerald-400'>-{formattedSavings}</dd>
-						</dl>
-					)}
+      <motion.button
+        onClick={handlePayment}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="w-full rounded-lg bg-brown-600 px-5 py-2.5 text-white font-medium hover:bg-brown-700 transition"
+      >
+        Lanjut ke Pembayaran
+      </motion.button>
 
-					{coupon && isCouponApplied && (
-						<dl className='flex items-center justify-between gap-4'>
-							<dt className='text-base font-normal text-gray-300'>Kupon ({coupon.code})</dt>
-							<dd className='text-base font-medium text-emerald-400'>-{coupon.discountPercentage}%</dd>
-						</dl>
-					)}
-					<dl className='flex items-center justify-between gap-4 border-t border-gray-600 pt-2'>
-						<dt className='text-base font-bold text-white'>Total</dt>
-						<dd className='text-base font-bold text-emerald-400'>{formattedTotal}</dd>
-					</dl>
-				</div>
-
-				<motion.button
-					className='flex w-full items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-300'
-					whileHover={{ scale: 1.05 }}
-					whileTap={{ scale: 0.95 }}
-					onClick={handlePayment}
-				>
-					Lanjut ke Pembayaran
-				</motion.button>
-
-				<div className='flex items-center justify-center gap-2'>
-					<span className='text-sm font-normal text-gray-400'>atau</span>
-					<Link
-						to='/'
-						className='inline-flex items-center gap-2 text-sm font-medium text-emerald-400 underline hover:text-emerald-300 hover:no-underline'
-					>
-						Lanjutkan Belanja
-						<MoveRight size={16} />
-					</Link>
-				</div>
-			</div>
-		</motion.div>
-	);
+      <div className="flex items-center justify-center gap-2">
+        <span className="text-sm text-gray-500">atau</span>
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1 text-sm font-medium text-brown-600 hover:text-brown-700"
+        >
+          Lanjutkan Belanja
+          <MoveRight size={16} />
+        </Link>
+      </div>
+    </motion.div>
+  );
 };
+
+const SummaryRow = ({ label, value, valueClass = "" }) => (
+  <dl className="flex items-center justify-between">
+    <dt className="text-gray-600">{label}</dt>
+    <dd className={`font-medium ${valueClass}`}>{value}</dd>
+  </dl>
+);
+
 export default OrderSummary;

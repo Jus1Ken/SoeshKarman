@@ -14,6 +14,7 @@ const productSchema = new mongoose.Schema(
 			type: Number,
 			min: 0,
 			required: true,
+			// Price is now stored directly in IDR (Rupiah)
 		},
 		image: {
 			type: String,
