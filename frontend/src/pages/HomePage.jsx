@@ -80,17 +80,17 @@ const HomePage = () => {
 			<div className='relative z-10 bg-gradient-to-r from-amber-100 via-orange-100 to-yellow-100 py-20'>
 				<div className='max-w-4xl mx-auto text-center px-4'>
 					<h3 className='text-3xl md:text-4xl font-bold text-amber-900 mb-6'>
-						Ready to Step Into Style?
+						Masih butuh pertanyaan?
 					</h3>
 					<p className='text-xl text-amber-700 mb-8 max-w-2xl mx-auto'>
-						Join thousands of satisfied customers who trust us for their footwear needs. Quality, comfort, and style in every step.
+						Hubungi kami untuk mendapatkan informasi lebih lanjut tentang produk kami.
 					</p>
 					<div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
 						<button className='bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-lg'>
-							Shop All Products
+							instagram😎
 						</button>
 						<button className='border-2 border-amber-600 text-amber-800 hover:bg-amber-600 hover:text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300'>
-							View Collections
+							Watsapp📞
 						</button>
 					</div>
 				</div>
